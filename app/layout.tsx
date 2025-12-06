@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import Head from '@/components/layouts/Head';
+import Footer from '@/components/layouts/Footer';
 
 export const metadata: Metadata = {
 	title: 'Audiophile',
@@ -13,7 +15,11 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en'>
-			<body className={`antialiased`}>{children}</body>
+			<body className={`antialiased bg-black`}>
+				<Head />
+				{children}
+				<Footer />
+			</body>
 		</html>
 	);
-}
+};

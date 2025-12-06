@@ -22,10 +22,13 @@ CREATE TABLE "Product" (
     "slug" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "new" BOOLEAN NOT NULL DEFAULT false,
     "features" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "imageUrl" TEXT NOT NULL,
     "categoryId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );

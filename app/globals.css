@@ -1,40 +1,57 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap');
 @import 'tailwindcss';
 
-:root {
-	/* Colors */
-	--clr-primary-1: hsl(22, 65%, 57%);
-	--clr-primary-1-lt: hsl(21, 94%, 75%);
-	--clr-primary-2: hsl(0, 0%, 6%);
-	--clr-primary-4: hsl(0, 0%, 98%);
-	--clr-primary-6: hsl(0, 0%, 20%);
-	--clr-base: hsl(0, 0%, 95%);
-	--clr-white: hsl(0, 0%, 100%);
-	--clr-black: hsl(0, 0%, 0%);
-	--clr-grey-1: hsl(0, 0%, 50%);
-	--clr-grey-2: hsl(0, 0%, 30%);
-	--clr-grey-3: hsl(0, 0%, 81%);
-	--clr-border: hsl(0, 0%, 10%);
-	--clr-danger: hsl(0, 65%, 49%);
-	--modal-background: 0 0 0 1000rem rgba(0, 0, 0, 0.4);
-}
-
+/* Tailwind theme tokens */
 @theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
-}
+	--color-primary: hsl(22 65% 57%);
+	--color-primary-1-lt: hsl(21 94% 75%);
+	--color-primary-2: hsl(0 0% 6%);
+	--color-primary-4: hsl(0 0% 98%);
+	--color-primary-6: hsl(0 0% 20%);
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
-	}
+	--color-background: hsl(var(--background));
+	--color-foreground: hsl(var(--foreground));
+	--color-base: hsl(0 0% 95%);
+
+	--color-grey-1: hsl(0 0% 50%);
+	--color-grey-2: hsl(0 0% 30%);
+	--color-grey-3: hsl(0 0% 81%);
+
+	--color-border: hsl(0 0% 10%);
+	--color-danger: hsl(0 65% 49%);
+	--color-primary-100: hsl(22, 65%, 57%);
+	--color-primary-200: hsl(0, 0%, 6%);
+	--color-primary-300: hsl(0, 0%, 95%);
+	--color-primary-400: hsl(0, 0%, 98%);
+	--color-primary-500: hsl(0, 0%, 89%);
+	--color-primary-600: hsl(0, 0%, 81%);
+	--color-secondary-100: hsl(21, 94%, 75%);
+	--color-secondary-200: hsl(0, 0%, 100%);
+	--color-secondary-300: hsl(0, 0%, 0%);
+	--color-secondary-400: hsl(0, 0%, 10%);
+	--color-secondary-500: hsl(0, 0%, 95%);
+	--color-secondary-600: hsl(0, 0%, 90%);
+	--color-secondary-700: hsl(0, 0%, 48%);
+
+	--font-primary-100: 'Manrope', sans-serif;
+	--font-weight-100: 200;
+	--font-weight-200: 400;
+	--font-weight-300: 500;
+	--font-weight-400: 700;
+
+	--max-container: 69.375rem;
+	--center-container: 0 auto;
+	--border-radius: 0.5rem;
+	--transition: all 0.5s;
 }
 
 body {
-	background: var(--background);
-	color: var(--foreground);
+	background: hsl(0 0% 0%);
+	color: hsl(0 0% 93%);
 	font-family: 'Manrope', sans-serif;
+}
+
+/* Hidden scrollbar */
+*::-webkit-scrollbar {
+	display: none;
 }
