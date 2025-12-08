@@ -1,20 +1,23 @@
 import Image from 'next/image';
 import NavLink from '@/components/layouts/NavLink';
 import Link from 'next/link';
+import HamMenu from './Menu';
 
 export default function Head({ className = '' }: { className?: string }) {
 	return (
 		<header className={`sticky top-0 z-50 bg-black ${className}`}>
-			<div className='flex justify-between items-center border-b border-grey-2/40 h-24 bg-black max-w-[1100px] mx-auto '>
-				<Link href='/' className='flex-1'>
+			<div className='flex justify-between items-center border-b border-grey-2/40 h-auto lg:h-24 bg-black max-w-[1100px] mx-auto px-4 py-6 relative'>
+				<HamMenu />
+				<Link href='/' className='flex-2 lg:flex-1'>
 					<Image
 						src='./assets/shared/logo.svg'
 						width={135}
 						height={45}
 						alt='Audiophile logo'
+						className='w-48 lg:w-auto mx-auto lg:mx-0'
 					/>
 				</Link>
-				<nav className='flex items-center justify-center gap-8 flex-3 uppercase'>
+				<nav className='lg:flex items-center justify-center gap-8 flex-3 uppercase hidden'>
 					<NavLink href='/'>Home</NavLink>
 					<NavLink href='/headphones'>Headphones</NavLink>
 					<NavLink href='/speakers'>Speakers</NavLink>
