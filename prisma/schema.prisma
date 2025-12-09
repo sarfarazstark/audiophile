@@ -1,8 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// =====================================================
+// ENUMS
+// =====================================================
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 enum OrderStatus {
     PENDING_PAYMENT // created but not paid
     PAID // payment succeeded
@@ -25,6 +24,10 @@ enum PaymentProvider {
     RAZORPAY
 }
 
+// =====================================================
+// GENERATOR / DATASOURCE
+// =====================================================
+
 generator client {
     provider = "prisma-client"
     output   = "../app/generated/prisma"
@@ -34,6 +37,10 @@ datasource db {
     provider = "postgresql"
 }
 
+// =====================================================
+// CATEGORY & PRODUCT
+// =====================================================
+
 model Category {
     id       Int       @id @default(autoincrement())
     slug     String    @unique
@@ -42,20 +49,107 @@ model Category {
 }
 
 model Product {
-    id          Int         @id @default(autoincrement())
-    slug        String      @unique
+    id          Int     @id @default(autoincrement())
+    slug        String  @unique
     name        String
     description String
-    new         Boolean     @default(false)
+    new         Boolean @default(false)
     features    String
     price       Int
-    imageUrl    String
-    categoryId  Int
-    category    Category    @relation(fields: [categoryId], references: [id])
-    orderItems  OrderItem[]
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime?   @updatedAt
+
+    // legacy support
+    imageUrl String?
+
+    // relations
+    categoryId Int
+    category   Category @relation(fields: [categoryId], references: [id])
+
+    orderItems OrderItem[]
+
+    // new relational additions
+    images          ProductImage?
+    categoryImages  CategoryImage?
+    includes        ProductInclude[]
+    gallery         ProductGallery[]
+    recommendations ProductRecommendation[] // products it recommends
+    recommendedBy   ProductRecommendation[] @relation("RecommendedBy") // products recommending this product
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
 }
+
+// =====================================================
+// PRODUCT IMAGE MODELS (NEW)
+// =====================================================
+
+// Responsive main product image (mobile/tablet/desktop)
+model ProductImage {
+    id        Int    @id @default(autoincrement())
+    productId Int    @unique
+    mobile    String
+    tablet    String
+    desktop   String
+
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// Responsive category preview image
+model CategoryImage {
+    id        Int    @id @default(autoincrement())
+    productId Int    @unique
+    mobile    String
+    tablet    String
+    desktop   String
+
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// Includes { quantity + item }
+model ProductInclude {
+    id        Int    @id @default(autoincrement())
+    productId Int
+    quantity  Int
+    item      String
+
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// Gallery images: first / second / third
+model ProductGallery {
+    id        Int             @id @default(autoincrement())
+    productId Int
+    position  GalleryPosition
+    mobile    String
+    tablet    String
+    desktop   String
+
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+    @@unique([productId, position])
+}
+
+enum GalleryPosition {
+    FIRST
+    SECOND
+    THIRD
+}
+
+// Recommended products (self relation)
+model ProductRecommendation {
+    id                   Int    @id @default(autoincrement())
+    productId            Int
+    recommendedProductId Int
+    mobile               String
+    tablet               String
+    desktop              String
+
+    product            Product @relation(fields: [productId], references: [id])
+    recommendedProduct Product @relation("RecommendedBy", fields: [recommendedProductId], references: [id])
+}
+
+// =====================================================
+// ORDER / PAYMENT (UNCHANGED)
+// =====================================================
 
 model Payment {
     id       String          @id @default(cuid())
@@ -63,14 +157,12 @@ model Payment {
     provider PaymentProvider
     status   PaymentStatus   @default(PENDING)
 
-    amount   Int // should equal Order.totalAmount
+    amount   Int
     currency String @default("INR")
 
-    // IDs from the payment provider (strings you get back from APIs)
-    providerPaymentId String? // e.g. Stripe payment_intent id or Razorpay payment id
-    providerOrderId   String? // e.g. Razorpay order id, Stripe session id
-
-    rawPayload Json? // store latest webhook payload if you want
+    providerPaymentId String?
+    providerOrderId   String?
+    rawPayload        Json?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
