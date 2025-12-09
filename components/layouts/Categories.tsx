@@ -35,7 +35,7 @@ export default function Categories({ className = '' }: { className?: string }) {
 								alt={nav.name}
 								width={120}
 								height={120}
-								className='transition-all duration-500 transform group-hover:-translate-y-2 -mb-12 z-10'
+								className='transition-all duration-500 transform group-hover:-translate-y-2 -mb-12 z-10 md:w-28'
 							/>
 						</div>
 
@@ -49,7 +49,7 @@ export default function Categories({ className = '' }: { className?: string }) {
 								className='h-10 w-40 group-hover:w-24 transition-all duration-500'
 							/>
 
-							<h2 className='mt-2 text-center text-lg text-primary-2'>
+							<h2 className='mt-2 text-center text-lg md:text-[15px] text-primary-2'>
 								{nav.name}
 							</h2>
 

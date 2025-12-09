@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Categories from './Categories';
 import Image from 'next/image';
 
-const HamMenu = () => {
+const HamMenu = ({ className = '' }: { className?: string }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const toggle = () => {
@@ -29,7 +29,7 @@ const HamMenu = () => {
 	}, []);
 
 	return (
-		<div className='flex-1 lg:hidden'>
+		<div className={`flex-1 lg:flex-1 lg:hidden ${className}`}>
 			<button onClick={toggle}>
 				<Image
 					src={
@@ -46,7 +46,7 @@ const HamMenu = () => {
 			<Categories
 				className={
 					isOpen
-						? 'fixed left-0 right-0 top-16 md:top-20 bottom-0 md:bottom-26 overflow-y-auto bg-white z-50'
+						? 'fixed left-0 right-0 top-16 md:top-18 bottom-0 md:bottom-26 overflow-y-auto bg-white z-50'
 						: 'hidden'
 				}
 			/>

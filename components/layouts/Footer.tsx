@@ -6,8 +6,8 @@ import { cn } from '@/lib/utilities';
 export default function Footer({ className = '' }: { className?: string }) {
 	return (
 		<footer className={cn(' bg-black', className)}>
-			<div className='max-w-[1100px] mx-auto border-grey-2/40 space-y-8'>
-				<div>
+			<div className='max-w-[1100px] mx-auto border-grey-2/40 space-y-8 px-8'>
+				<div className='w-full flex justify-center md:justify-start'>
 					<hr className='border-none h-1 bg-primary w-26' />
 				</div>
 				<div className='flex flex-col items-center lg:flex-row justify-between lg:items-end min-h-24 gap-8'>

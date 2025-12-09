@@ -8,13 +8,13 @@ export default function Head({ className = '' }: { className?: string }) {
 		<header className={`sticky top-0 z-50 bg-black ${className}`}>
 			<div className='flex justify-between items-center border-b border-grey-2/40 h-auto lg:h-24 bg-black max-w-[1100px] mx-auto px-4 py-6 relative'>
 				<HamMenu />
-				<Link href='/' className='flex-2 lg:flex-1'>
+				<Link href='/' className='flex-2 md:flex-10 lg:flex-1'>
 					<Image
 						src='./assets/shared/logo.svg'
 						width={135}
 						height={45}
 						alt='Audiophile logo'
-						className='w-48 lg:w-auto mx-auto lg:mx-0'
+						className='w-48 md:w-36 lg:w-auto mx-auto md:mr-auto md:ml-0 lg:mx-0'
 					/>
 				</Link>
 				<nav className='lg:flex items-center justify-center gap-8 flex-3 uppercase hidden'>
@@ -23,7 +23,7 @@ export default function Head({ className = '' }: { className?: string }) {
 					<NavLink href='/speakers'>Speakers</NavLink>
 					<NavLink href='/earphones'>Earphones</NavLink>
 				</nav>
-				<div className='flex-1 flex justify-end items-center'>
+				<div className='flex-1 lg:flex-1 flex justify-end items-center'>
 					<Image
 						src='./assets/shared/icon-cart.svg'
 						width={25}
