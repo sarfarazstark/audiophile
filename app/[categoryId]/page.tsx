@@ -3,12 +3,36 @@ import { prisma } from '@/lib/prisma';
 import Products from '@/components/layouts/Products';
 import Categories from '@/components/layouts/Categories';
 import About from '@/components/layouts/About';
+import { Metadata } from 'next';
+
+interface Props {
+	params: Promise<{ categoryId: string; }>;
+}
+
+export async function generateMetadata(
+	{ params }: Props,
+): Promise<Metadata> {
+	const { categoryId } = await params;
+	const category = await prisma.category.findUnique({
+		where: {
+			slug: categoryId,
+		},
+	});
+
+	if (!category) {
+		return {
+			title: 'Category not found',
+		};
+	}
+
+	return {
+		title: category.name + ' | Audiophile',
+	};
+}
 
 export default async function CategoryPage({
 	params: awaitedParams,
-}: {
-	params: Promise<{ categoryId: string }>;
-}) {
+}: Props) {
 	const params = await awaitedParams;
 	const categoryId = params.categoryId;
 

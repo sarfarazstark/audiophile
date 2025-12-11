@@ -1,18 +1,89 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { useCart } from '@/lib/store/cart';
 import Image from 'next/image';
 import BackButton from '@/components/ui/BackButton';
 import NavLink from '@/components/layouts/NavLink';
 import Categories from '@/components/layouts/Categories';
 import About from '@/components/layouts/About';
 import { CartAction } from '@/components/layouts/CartAction';
+import { Metadata } from 'next';
+import { unstable_cache } from 'next/cache';
 
-export default async function ProductPage({
-	params: awaitedParams,
-}: {
-	params: Promise<{ productId: string }>;
-}) {
+// 1. Define Props
+type Props = {
+	params: Promise<{ productId: string; }>;
+};
+
+const getProduct = async (slug: string) => {
+	return await unstable_cache(
+		async () => {
+			return await prisma.product.findUnique({
+				where: { slug },
+				include: {
+					images: true,
+					includes: true,
+					gallery: {
+						orderBy: { position: 'asc' },
+					},
+					recommendations: {
+						include: {
+							recommendedProduct: {
+								include: {
+									images: true,
+								},
+							},
+						},
+					},
+					category: true,
+				},
+			});
+		},
+		['product-page', slug],
+		{
+			tags: [`product:${slug}`],
+			revalidate: 3600,
+		},
+	)();
+};
+
+// 3. Generate Metadata (Uses Data Cache)
+export async function generateMetadata(
+	{ params }: Props,
+): Promise<Metadata> {
+	const { productId } = await params;
+	const product = await getProduct(productId);
+
+	if (!product) {
+		return {
+			title: 'Product Not Found',
+		};
+	}
+
+	const title = `${product.name} | ${product.category.name} | Shop for ${product.name}`;
+	const description = product.description;
+	const imageUrl =
+		product.images?.desktop || product.imageUrl || '/placeholder.svg';
+
+	return {
+		title: title,
+		description: description,
+		openGraph: {
+			title: title,
+			description: description,
+			images: [
+				{
+					url: imageUrl,
+					width: 1200,
+					height: 630,
+					alt: product.name,
+				},
+			],
+			type: 'website',
+		},
+	};
+}
+
+export default async function ProductPage({ params: awaitedParams }: Props) {
 	const params = await awaitedParams;
 	const slug = params.productId;
 
@@ -20,30 +91,11 @@ export default async function ProductPage({
 		notFound();
 	}
 
-	const product = await prisma.product.findUnique({
-		where: { slug },
-		include: {
-			images: true,
-			includes: true,
-			gallery: {
-				orderBy: { position: 'asc' },
-			},
-			recommendations: {
-				include: {
-					recommendedProduct: {
-						include: {
-							images: true,
-						},
-					},
-				},
-			},
-		},
-	});
+	const product = await getProduct(slug);
 
 	if (!product) {
 		notFound();
 	}
-	console.log(product.images);
 
 	const price = Intl.NumberFormat('en-US').format(product.price);
 
@@ -58,11 +110,11 @@ export default async function ProductPage({
 					{/* Product Overview  */}
 					<div
 						className='
-							bg-white w-full
-							flex flex-col lg:flex-row
-							gap-8 lg:gap-22 mb-10
-							min-h-full lg:min-h-130
-						'>
+                            bg-white w-full
+                            flex flex-col lg:flex-row
+                            gap-8 lg:gap-22 mb-10
+                            min-h-full lg:min-h-130
+                        '>
 						{/* LEFT IMAGE */}
 						<div className='flex-1 flex'>
 							<picture className='w-full h-auto relative'>
@@ -70,12 +122,10 @@ export default async function ProductPage({
 									srcSet={product.images?.mobile || '/placeholder.svg'}
 									media='(max-width: 768px)'
 								/>
-
 								<source
 									srcSet={product.images?.tablet || '/placeholder.svg'}
 									media='(max-width: 1024px)'
 								/>
-
 								<Image
 									src={
 										product.images?.desktop ||
@@ -166,28 +216,26 @@ export default async function ProductPage({
 					{/* Gallery */}
 					<div
 						className='
-						min-h-155
-						md:min-h-90
-						lg:min-h-155
-						grid gap-8
-						grid-cols-1
-						md:grid-cols-[1fr_60%]
-						md:grid-rows-[auto,auto]
-					'>
+                        min-h-155
+                        md:min-h-90
+                        lg:min-h-155
+                        grid gap-8
+                        grid-cols-1
+                        md:grid-cols-[1fr_60%]
+                        md:grid-rows-[auto,auto]
+                    '>
 						{product.gallery.map((image) => {
 							return (
 								<picture
 									key={image.id}
 									className={`
-									w-full h-auto relative rounded-xl overflow-hidden
-
-									${image.position === 'FIRST' && 'md:row-start-1 md:col-start-1'}
-									${image.position === 'SECOND' && 'md:row-start-2 md:col-start-1'}
-									${image.position === 'THIRD' && 'row-span-2 md:row-span-2 md:col-start-2'}
-								`}>
+                                    w-full h-auto relative rounded-xl overflow-hidden
+                                    ${image.position === 'FIRST' && 'md:row-start-1 md:col-start-1'}
+                                    ${image.position === 'SECOND' && 'md:row-start-2 md:col-start-1'}
+                                    ${image.position === 'THIRD' && 'row-span-2 md:row-span-2 md:col-start-2'}
+                                `}>
 									<source srcSet={image.mobile} media='(max-width: 768px)' />
 									<source srcSet={image.tablet} media='(max-width: 1024px)' />
-
 									<Image
 										src={image.desktop}
 										alt={product.name}
@@ -219,7 +267,6 @@ export default async function ProductPage({
 										height={400}
 										className='w-full h-full object-contain rounded-xl'
 									/>
-
 									<picture className='w-full h-auto relative'>
 										<source
 											srcSet={
@@ -228,7 +275,6 @@ export default async function ProductPage({
 											}
 											media='(max-width: 768px)'
 										/>
-
 										<source
 											srcSet={
 												recommendation.recommendedProduct.images?.tablet ||
@@ -236,7 +282,6 @@ export default async function ProductPage({
 											}
 											media='(max-width: 1024px)'
 										/>
-
 										<Image
 											src={
 												recommendation.recommendedProduct.images?.desktop ||

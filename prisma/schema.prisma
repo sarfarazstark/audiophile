@@ -22,6 +22,7 @@ enum PaymentStatus {
 enum PaymentProvider {
     STRIPE
     RAZORPAY
+    PAYU
 }
 
 // =====================================================

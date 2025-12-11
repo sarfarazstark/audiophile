@@ -13,6 +13,7 @@ export function CartAction({ product }: { product: CartItem }) {
 
 	const handleAddToCart = () => {
 		addItem(product, count);
+		setCount(1);
 	};
 
 	console.log(product);

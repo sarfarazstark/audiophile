@@ -26,7 +26,7 @@ function Bento() {
 								deliver truly remarkable sound.
 							</p>
 							<NavLink
-								href={`/products/xx99-mark-two-headphones`}
+								href={`/products/zx9-speaker`}
 								className='bg-primary-200 hover:bg-primary-6 transition-colors duration-500 text-primary-400 font-semibold px-6 py-3 text-xs'>
 								See Product
 							</NavLink>
@@ -61,7 +61,7 @@ function Bento() {
 							</h2>
 
 							<NavLink
-								href={`/products/xx99-mark-two-headphones`}
+								href={`/products/zx7-speaker`}
 								className='bg-transparent hover:bg-primary-6 transition-colors duration-500 border-2 border-primary-200 text-primary-200 font-semibold px-6 py-3 text-xs'>
 								See Product
 							</NavLink>
@@ -96,7 +96,7 @@ function Bento() {
 							</h2>
 
 							<NavLink
-								href={`/products/xx99-mark-two-headphones`}
+								href={`/products/yx1-earphones`}
 								className='bg-transparent hover:bg-primary-6 transition-colors duration-500 border-2 border-primary-200 text-primary-200 font-semibold px-6 py-3 text-xs'>
 								See Product
 							</NavLink>

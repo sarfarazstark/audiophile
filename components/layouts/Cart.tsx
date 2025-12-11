@@ -2,6 +2,10 @@
 import { useCart } from '@/lib/store/cart';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
+import { Trash, Minus, Plus } from 'lucide-react';
+import Link from 'next/link';
+
 
 export function Cart() {
 	const items = useCart((state) => state.items);
@@ -24,6 +28,10 @@ export function Cart() {
 				toggleRef.current?.contains(event.target as Node)
 			) {
 				return;
+
+				// if click on checkout button then close the dropdown
+			} else if (event.target instanceof HTMLAnchorElement) {
+				return;
 			}
 
 			setIsOpen(false);
@@ -35,6 +43,8 @@ export function Cart() {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, []);
+
+	const total: number = parseFloat(items.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2));
 
 	return (
 		<div className='flex-1 lg:flex-1 flex justify-end items-center relative'>
@@ -50,24 +60,43 @@ export function Cart() {
 					alt='Cart icon'
 				/>
 				{totalItems > 0 && (
-					<div className='absolute top-0 right-0 -mt-2 -mr-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center pointer-events-none'>
+					<motion.div
+						initial={{ y: -5 }}
+						animate={{
+							y: 0, transition: {
+								type: 'spring',
+								stiffness: 500,
+								duration: 0.2,
+								ease: 'easeInOut'
+							}
+						}}
+						className='absolute top-0 right-0 -mt-2 -mr-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center pointer-events-none'>
 						{totalItems}
-					</div>
+					</motion.div>
 				)}
 			</div>
 
 			{isOpen && (
-				<div
+				<motion.div
+					initial={{ y: -30 }}
+					animate={{
+						y: 0, transition: {
+							type: 'spring',
+							stiffness: 100,
+							duration: 0.2,
+							ease: 'easeInOut'
+						}
+					}}
 					ref={dropdownRef}
 					className='absolute -right-4 md:right-0 top-full mt-8 z-10 w-max'>
-					<div className='flex flex-col justify-start gap-5 items-center bg-primary-400 shadow-xl rounded-2xl border border-gray-300 min-w-xs md:min-w-sm min-h-120 max-h-120 p-6 md:p-8 text-primary-200'>
+					<div className='mt-5 flex flex-col justify-start gap-5 items-center bg-white shadow-xl rounded-xl border border-gray-300 max-w-xs md:max-w-sm md:min-w-sm min-h-125 max-h-125 p-6 md:p-8 text-primary-200'>
 						<div className='flex justify-between w-full'>
 							<span className='leading-6 tracking-wider uppercase font-bold'>
 								Cart ({totalItems})
 							</span>
 							<button
-								className='leading-6 tracking-wider text-sm font-bold hover:text-white transition-colors'
-								onClick={clearCart}>
+								className='leading-6 tracking-wider text-sm font-bold hover:text-red-700 cursor-pointer transition-colors'
+								onClick={() => confirm('You sure to remove all items?') && clearCart()}>
 								Remove All
 							</button>
 						</div>
@@ -85,8 +114,8 @@ export function Cart() {
 											alt={item.name}
 											className='rounded-lg'
 										/>
-										<div>
-											<p className='font-bold text-md'>{item.name}</p>
+										<div className='overflow-hidden'>
+											<p className='font-bold text-md truncate' title={item.name}>{item.name}</p>
 											<span className='text-sm'>
 												${' '}
 												{Intl.NumberFormat('en-US').format(
@@ -95,43 +124,27 @@ export function Cart() {
 											</span>
 										</div>
 
-										<div className='flex items-center justify-between bg-primary-500 min-w-24 ml-auto'>
+										<div className='grid grid-cols-3 items-center justify-between bg-primary-400 min-w-24 min-h-8 ml-auto rounded overflow-hidden'>
 											{item.quantity > 1 ? (
 												<button
-													className='text-primary-200 flex-1 flex items-center justify-center cursor-pointer py-2'
+													className='text-primary-200 flex-1 flex items-center justify-center cursor-pointer h-full py-1 hover:text-primary hover:bg-primary-500 transition-colors duration-300'
 													onClick={() => decrease(item.id)}>
-													-
+													<Minus strokeWidth={3} className="size-3" />
 												</button>
 											) : (
 												<button
-													className='text-primary-200 flex-1 flex items-center justify-center cursor-pointer py-2'
-													onClick={() => removeItem(item.id)}>
-													<svg
-														xmlns='http://www.w3.org/2000/svg'
-														width='14'
-														height='14'
-														viewBox='0 0 24 24'
-														fill='none'
-														stroke='currentColor'
-														strokeWidth='2'
-														strokeLinecap='round'
-														strokeLinejoin='round'
-														className='text-red-400'>
-														<path d='M10 11v6' />
-														<path d='M14 11v6' />
-														<path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
-														<path d='M3 6h18' />
-														<path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
-													</svg>
+														className='flex-1 flex items-center justify-center cursor-pointer h-full py-1 text-primary hover:bg-primary-500 transition-colors duration-300'
+														onClick={() => confirm(`Delete ${item.name}?`) && removeItem(item.id)}>
+														<Trash strokeWidth={3} className="size-3" />
 												</button>
 											)}
-											<span className='text-primary-200 flex-1 flex items-center justify-center text-sm py-2'>
+											<span className='text-primary-200 flex-1 flex h-full items-center justify-center text-sm py-1 font-bold'>
 												{item.quantity}
 											</span>
 											<button
-												className='text-primary-200 flex-1 flex items-center justify-center cursor-pointer py-2'
+												className='text-primary-200 flex-1 flex h-full items-center justify-center cursor-pointer py-1 hover:text-primary hover:bg-primary-500 transition-colors duration-300'
 												onClick={() => increase(item.id)}>
-												+
+												<Plus strokeWidth={3} className="size-3" />
 											</button>
 										</div>
 									</div>
@@ -162,23 +175,27 @@ export function Cart() {
 							)}
 						</div>
 
-						<div className='flex justify-between items-center w-full mt-auto'>
-							<span className='font-bold'>Total</span>
-							<span className='font-bold'>
-								${' '}
-								{items
-									.reduce((acc, item) => acc + item.price * item.quantity, 0)
-									.toFixed(2)}
-							</span>
-						</div>
 
 						{items.length > 0 && (
-							<button className='w-full bg-primary text-white font-bold py-3 uppercase hover:bg-primary-1-lt transition-colors'>
-								Checkout
-							</button>
+							<>
+								<div className='flex justify-between items-center w-full mt-auto'>
+									<span className='font-bold'>Total</span>
+									<span className='font-bold'>
+										${' '}
+										{Intl.NumberFormat('en-US').format(total)}
+									</span>
+								</div>
+								<Link
+									href='/checkout'
+									onClick={() => setIsOpen(false)} // Add this line here
+									className='w-full bg-primary text-white font-bold py-3 text-center uppercase hover:bg-primary-1-lt transition-colors'
+								>
+									Checkout
+								</Link>
+							</>
 						)}
 					</div>
-				</div>
+				</motion.div>
 			)}
 		</div>
 	);
