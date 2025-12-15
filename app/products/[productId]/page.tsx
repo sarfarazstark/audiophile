@@ -8,6 +8,7 @@ import About from '@/components/layouts/About';
 import { CartAction } from '@/components/layouts/CartAction';
 import { Metadata } from 'next';
 import { unstable_cache } from 'next/cache';
+import { price } from '@/lib/utilities';
 
 // 1. Define Props
 type Props = {
@@ -46,7 +47,6 @@ const getProduct = async (slug: string) => {
 	)();
 };
 
-// 3. Generate Metadata (Uses Data Cache)
 export async function generateMetadata(
 	{ params }: Props,
 ): Promise<Metadata> {
@@ -96,8 +96,6 @@ export default async function ProductPage({ params: awaitedParams }: Props) {
 	if (!product) {
 		notFound();
 	}
-
-	const price = Intl.NumberFormat('en-US').format(product.price);
 
 	return (
 		<>
@@ -162,7 +160,7 @@ export default async function ProductPage({ params: awaitedParams }: Props) {
 
 								{/* PRICE */}
 								<span className='text-primary-200 text-lg font-semibold'>
-									$ {price}
+									{price(product.price)}
 								</span>
 
 								{/* ADD TO CART */}

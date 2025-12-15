@@ -13,6 +13,13 @@ export type products = {
 	categoryId: number;
 	createdAt: Date;
 	updatedAt: Date | null;
+	images: {
+		id: number;
+		productId: number;
+		mobile: string;
+		tablet: string;
+		desktop: string;
+	} | null;
 };
 
 export const ProductCard = ({
@@ -24,29 +31,45 @@ export const ProductCard = ({
 }) => (
 	<div
 		key={product.id}
-		className={`bg-white p-4 w-full flex gap-22 ${
-			isReverse ? 'flex-row-reverse' : ''
+		className={`bg-white p-4 w-full flex flex-col gap-14 lg:gap-22 ${
+			isReverse ? 'lg:flex-row-reverse' : 'lg:flex-row'
 		}`}>
 		<div className='flex-1'>
-			<Image
-				src={product.imageUrl || '/placeholder.svg'}
-				alt={product.name}
-				width={400}
-				height={400}
-				className='w-full'
-			/>
+			{/* <Image
+			src={product.imageUrl || '/placeholder.svg'}
+			alt={product.name}
+			width={400}
+			height={400}
+			className='w-full'
+		/> */}
+
+			<picture>
+				<source
+					media='(min-width: 1024px)'
+					srcSet={product.images?.desktop || '/placeholder.svg'}
+				/>
+				<source
+					media='(min-width: 768px)'
+					srcSet={product.images?.tablet || '/placeholder.svg'}
+				/>
+				<img
+					src={product.images?.mobile || '/placeholder.svg'}
+					alt='ZX7 speaker background'
+					className='w-full h-full'
+				/>
+			</picture>
 		</div>
-		<div className='flex-1 flex flex-col justify-center items-start'>
-			<div className='flex flex-col items-start gap-8'>
+		<div className='flex-1 flex flex-col justify-center lg:items-start'>
+			<div className='flex flex-col items-center lg:items-start gap-8'>
 				{product.new && (
 					<span className='text-primary tracking-[0.5em] text-xs md:text-sm font-light uppercase'>
 						New Product
 					</span>
 				)}
-				<h2 className='text-4xl font-bold text-primary-200 max-w-sm'>
+				<h2 className='text-4xl font-bold text-primary-200 max-w-sm text-center lg:text-left'>
 					{product.name}
 				</h2>
-				<p className='text-primary-6/70 font-extralight max-w-lg leading-6 tracking-wider'>
+				<p className='text-primary-6/70 text-center lg:text-left font-extralight max-w-lg leading-6 tracking-wider'>
 					{product.description}
 				</p>
 				<NavLink

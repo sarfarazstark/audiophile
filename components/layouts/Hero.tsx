@@ -3,35 +3,15 @@ import Link from 'next/link';
 
 export default async function Hero({ className = '' }: { className?: string }) {
 	return (
-		<div
-			className={cn(
-				'bg-black px-8 min-h-[calc(100svh-4rem)] md:min-h-180 lg:h-[calc(100vh-6rem)] relative flex',
-				className,
-			)}>
-			<picture>
-				<source
-					media='(min-width: 1024px)'
-					srcSet='/assets/home/desktop/hero.png'
-				/>
-				<source
-					media='(min-width: 768px)'
-					srcSet='/assets/home/tablet/image-header.png'
-				/>
-				<img
-					src='/assets/home/mobile/image-header.png'
-					alt='hero headphones'
-					className=' absolute inset-0 w-full h-full object-contain md:object-cover'
-				/>
-			</picture>
+		<div className={cn('bg-primary-200 flex relative', className)}>
 			<section
 				className='
 					text-white m-auto h-full w-[1100px]
-					flex flex-col lg:flex-row
-					items-center
+					grid grid-cols-1 lg:grid-cols-2
+					items-center justify-items-center lg:justify-items-start
 					overflow-hidden
+					py-28 lg:py-12 px-8
 				'>
-				{/* Background image via <picture> */}
-
 				{/* Content */}
 				<div className='relative z-10 flex flex-col gap-3 md:gap-7 justify-center items-center lg:items-start flex-1 uppercase max-w-96'>
 					<span className='text-grey-3 tracking-[0.5em] text-xs md:text-sm font-light'>
@@ -54,7 +34,24 @@ export default async function Hero({ className = '' }: { className?: string }) {
 					</Link>
 				</div>
 
-				<div className='flex-1 flex h-full w-full'></div>
+				<div className='flex-1 h-full w-full absolute lg:static inset-0'>
+					{/* Background image via <picture> */}
+					<picture>
+						<source
+							media='(min-width: 1024px)'
+							srcSet='/assets/home/desktop/headphone-hero-image.png'
+						/>
+						<source
+							media='(min-width: 768px)'
+							srcSet='/assets/home/tablet/image-header.png'
+						/>
+						<img
+							src='/assets/home/mobile/image-header.png'
+							alt='hero headphones'
+							className='w-full h-full object-contain'
+						/>
+					</picture>
+				</div>
 			</section>
 		</div>
 	);

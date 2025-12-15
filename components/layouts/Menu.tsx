@@ -19,7 +19,6 @@ const HamMenu = ({ className = '' }: { className?: string }) => {
 		});
 	};
 
-	// Cleanup on unmount (in case component unmounts while menu is open)
 	useEffect(() => {
 		return () => {
 			if (typeof document !== 'undefined') {
@@ -43,13 +42,12 @@ const HamMenu = ({ className = '' }: { className?: string }) => {
 				/>
 			</button>
 
-			<Categories
-				className={
-					isOpen
-						? 'fixed left-0 right-0 top-16 md:top-18 bottom-0 md:bottom-26 overflow-y-auto bg-white z-50'
-						: 'hidden'
-				}
-			/>
+			{isOpen && (
+				<Categories
+					className='fixed left-0 right-0 top-16 md:top-18 bottom-0 md:bottom-26 overflow-y-auto bg-white z-50'
+					onClick={() => setIsOpen((prev) => !prev)}
+				/>
+			)}
 		</div>
 	);
 };

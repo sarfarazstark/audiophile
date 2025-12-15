@@ -57,19 +57,22 @@ export default async function CategoryPage({
 		orderBy: {
 			createdAt: 'desc',
 		},
+		include: {
+			images: true,
+		},
 	});
 
 	return (
 		<div>
 			<div className='bg-black'>
-				<div className='max-w-[1100px] mx-auto bg-black min-h-60 flex items-center justify-center'>
-					<h1 className='text-4xl font-bold tracking-wider text-white text-center uppercase'>
+				<div className='max-w-[1100px] mx-auto bg-black min-h-30 md:min-h-60 flex items-center justify-center'>
+					<h1 className='text-3xl md:text-4xl font-bold tracking-wider text-white text-center uppercase'>
 						{categoryId}
 					</h1>
 				</div>
 			</div>
 			<div className='bg-white'>
-				<div className='max-w-[1100px] mx-auto py-24'>
+				<div className='max-w-[1100px] mx-auto py-12 lg:py-24 px-8'>
 					<Products products={products} />
 				</div>
 			</div>

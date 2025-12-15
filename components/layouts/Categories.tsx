@@ -1,5 +1,7 @@
+'use client';
 import NavLink from './NavLink';
 import Image from 'next/image';
+import { motion } from 'motion/react';
 
 const nav_list = [
 	{
@@ -9,7 +11,7 @@ const nav_list = [
 	},
 	{
 		name: 'Speakers',
-		href: '/speaker',
+		href: '/speakers',
 		image: '/assets/shared/speakers.png',
 	},
 	{
@@ -19,27 +21,43 @@ const nav_list = [
 	},
 ];
 
-export default function Categories({ className = '' }: { className?: string }) {
+export default function Categories({
+	className = '',
+	onClick = () => {},
+}: {
+	className?: string;
+	onClick?: () => void;
+}) {
 	return (
-		<div className={`bg-white py-12 px-8  min-h-100 ${className}`}>
+		<motion.div
+			initial={{ y: -25 }}
+			animate={{
+				y: 0,
+				transition: {
+					type: 'spring',
+					stiffness: 100,
+					duration: 0.2,
+					ease: 'easeInOut',
+				},
+			}}
+			className={`bg-white py-12 px-8 min-h-100 ${className}`}>
 			<div className='grid grid-cols-1 md:grid-cols-3 justify-end items-center gap-8 max-w-[1100px] mx-auto uppercase'>
 				{nav_list.map((nav) => (
 					<NavLink
 						key={nav.name}
 						href={nav.href}
-						className='relative text-black flex flex-col items-center group'>
-						{/* FIXED IMAGE WRAPPER — SAME HEIGHT FOR ALL CARDS */}
+						className='relative text-black flex flex-col items-center group'
+						onClick={onClick}>
 						<div className='h-28 flex items-end justify-center overflow-visible'>
 							<Image
 								src={nav.image}
 								alt={nav.name}
-								width={120}
-								height={120}
-								className='transition-all duration-500 transform group-hover:-translate-y-2 -mb-12 z-10 md:w-28'
+								width={240}
+								height={240}
+								className='transition-all duration-500 transform group-hover:-translate-y-2 -mb-16 z-10 w-26 lg:w-30'
 							/>
 						</div>
 
-						{/* CARD BODY */}
 						<div className='flex flex-col items-center justify-end gap-3 p-5 h-48 bg-primary-500 w-full rounded-xl'>
 							<Image
 								src='/assets/shared/shadow.png'
@@ -69,6 +87,6 @@ export default function Categories({ className = '' }: { className?: string }) {
 					</NavLink>
 				))}
 			</div>
-		</div>
+		</motion.div>
 	);
 }

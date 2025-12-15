@@ -7,7 +7,7 @@ import { Cart } from './Cart';
 export default function Header({ className = '' }: { className?: string }) {
 	return (
 		<header
-			className={`sticky top-0 z-50 bg-black lg:px-8 xl:px-0 ${className}`}>
+			className={`sticky top-0 z-30 bg-black lg:px-8 xl:px-0 ${className}`}>
 			<div className='flex justify-between items-center border-b border-grey-2/40 h-auto lg:h-24 bg-black max-w-[1100px] mx-auto px-4 py-6 lg:px-0 relative'>
 				<HamMenu />
 				<Link href='/' className='flex-2 md:flex-10 lg:flex-1'>

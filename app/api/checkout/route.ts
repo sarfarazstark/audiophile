@@ -1,59 +1,76 @@
 import { NextResponse } from 'next/server';
-import Rate from '@/lib/utility';
 import { prisma } from '@/lib/prisma';
-import {
-	generatePayuSignature,
-	getPayuUrls,
-	PayuInitiatePayload,
-} from '@/lib/payu';
-import { cuid, ulid } from 'zod/v4';
+import Rate from '@/lib/utility';
 import { PaymentProvider } from '@/app/generated/prisma/enums';
+import { generatePayuHash, PayuInitPayload } from '@/lib/payu';
+import crypto from 'crypto';
+
+interface IncomingCartItem {
+	id: number;
+	quantity: number;
+}
+
+interface IncomingRequest {
+	data: {
+		name: string;
+		email: string;
+		phone: string;
+		addressLine1: string;
+		addressLine2?: string;
+		city: string;
+		state: string;
+		pinCode: string;
+		paymentType: 'cod' | 'online';
+	};
+	items: IncomingCartItem[];
+}
 
 export async function POST(req: Request) {
 	try {
-		const { data, items } = await req.json();
+		const body: IncomingRequest = await req.json();
+		const { data, items } = body;
 
-		// --------- Prepare Lookups ----------
-		const ids = items.map((i: { id: number }) => i.id);
+		const key = process.env.PAYU_MERCHANT_KEY;
+		const salt = process.env.PAYU_MERCHANT_SECRET;
+		const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+		const env = process.env.PAYU_ENV;
 
-		// quantity lookup for faster access
-		const qtyMap: Record<number, number> = {};
-		for (const item of items) qtyMap[item.id] = item.quantity;
+		if (!key || !salt || !baseUrl) {
+			console.error('❌ CRITICAL: Missing PayU Environment Variables.');
+			return NextResponse.json(
+				{ error: 'Server Configuration Error: Missing PayU Keys' },
+				{ status: 500 },
+			);
+		}
 
-		// --------- Fetch Products ----------
+		const qtyMap = Object.fromEntries(items.map((i) => [i.id, i.quantity]));
+
 		const products = await prisma.product.findMany({
-			where: { id: { in: ids } },
-			select: { id: true, price: true, name: true },
+			where: { id: { in: items.map((i) => i.id) } },
+			select: { id: true, name: true, price: true },
 		});
 
-		// --------- Product Info ----------
-		const productInfo = products
-			.map((p) => `${p.name} x ${qtyMap[p.id]}`)
-			.join(', ');
-
-		// --------- Total Price ----------
-		const totalPrice = products.reduce(
+		const subtotal = products.reduce(
 			(sum, p) => sum + p.price * qtyMap[p.id],
 			0,
 		);
 
-		const grandTotal = new Rate(totalPrice).getTotalPrice();
+		const grandTotal = new Rate(subtotal).getTotalPrice();
+		const trackingId = crypto.randomBytes(5).toString('hex').toUpperCase();
 
-		// --------- Create Order ----------
 		const order = await prisma.order.create({
 			data: {
-				trackingId: String(ulid()),
+				trackingId,
 				email: data.email,
 				fullName: data.name,
 				phoneNumber: data.phone,
 				addressLine1: data.addressLine1,
-				addressLine2: data.addressLine2,
+				addressLine2: data.addressLine2 ?? '',
 				city: data.city,
 				state: data.state,
-				postalCode: data.postalCode,
+				postalCode: data.pinCode,
 				country: 'India',
 				totalAmount: grandTotal,
-
 				items: {
 					create: products.map((p) => ({
 						productId: p.id,
@@ -62,7 +79,6 @@ export async function POST(req: Request) {
 						subtotal: p.price * qtyMap[p.id],
 					})),
 				},
-
 				payment: {
 					create: {
 						provider: PaymentProvider.PAYU,
@@ -74,81 +90,40 @@ export async function POST(req: Request) {
 			include: { payment: true },
 		});
 
-		// --------- PayU Setup ----------
-		const key = process.env.PAYU_MERCHANT_KEY!;
-		const secret = process.env.PAYU_MERCHANT_SECRET!;
-		const env = process.env.PAYU_ENV;
-		const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+		const payuScriptUrl =
+			env === 'prod'
+				? 'https://jssdk.payu.in/bolt/bolt.min.js'
+				: 'https://jssdk-uat.payu.in/bolt/bolt.min.js';
 
-		if (!key || !secret) {
-			return NextResponse.json(
-				{ error: 'Server misconfiguration' },
-				{ status: 500 },
-			);
+		let productInfo = products
+			.map((p) => `${p.name} x ${qtyMap[p.id]}`)
+			.join(', ');
+
+		if (productInfo.length > 100) {
+			productInfo = productInfo.substring(0, 97) + '...';
 		}
 
-		const date = new Date().toUTCString();
-
-		const payload: PayuInitiatePayload = {
-			accountId: key,
-			txnId: order.payment?.id || String(cuid()),
-			order: {
-				productInfo,
-				paymentChargeSpecification: { price: grandTotal },
-			},
-			billingDetails: {
-				firstName: data.name,
-				email: data.email,
-				phone: data.phone,
-				address: {
-					address1: data.addressLine1,
-					city: data.city,
-					state: data.state,
-					country: 'India',
-					zipCode: data.postalCode,
-				},
-			},
-			callBackActions: {
-				successAction: `${baseUrl}/payment/success`,
-				failureAction: `${baseUrl}/payment/failure`,
-				cancelAction: `${baseUrl}/payment/cancel`,
-			},
-			additionalInfo: {
-				txnFlow: 'non-seamless',
-			},
+		const payload: PayuInitPayload = {
+			key: key,
+			txnid: order.payment!.id,
+			amount: grandTotal.toFixed(2),
+			productinfo: productInfo,
+			firstname: data.name,
+			email: data.email,
+			phone: data.phone || '9999999999',
+			surl: `${baseUrl}/payment/success`,
+			furl: `${baseUrl}/payment/failure`,
 		};
 
-		// --------- Signature ----------
-		const signature = generatePayuSignature(payload, date, secret);
-		const authHeader = `hmac username="${key}", algorithm="sha512", headers="date", signature="${signature}"`;
+		const hash = generatePayuHash(payload, salt);
 
-		const urls = getPayuUrls(env);
-
-		// --------- PayU Request ----------
-		const response = await fetch(urls.payment, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				date,
-				authorization: authHeader,
-			},
-			body: JSON.stringify(payload),
+		return NextResponse.json({
+			url: payuScriptUrl,
+			params: { ...payload, hash },
+			orderId: order.trackingId,
 		});
-
-		const payuData = await response.json();
-
-		if (!response.ok || !payuData.result?.checkoutUrl) {
-			console.error('PayU Init Error:', payuData);
-			return NextResponse.json(
-				{ error: payuData.status || 'Failed to initiate' },
-				{ status: 400 },
-			);
-		}
-
-		// --------- Final Response ----------
-		return NextResponse.json({ url: payuData.result.checkoutUrl });
-	} catch (error) {
-		console.error('Checkout Error:', error);
+	} catch (err) {
+		console.error('PayU Checkout Error:', err);
 		return NextResponse.json(
 			{ error: 'Internal server error' },
 			{ status: 500 },

@@ -13,7 +13,7 @@ function Bento() {
 							alt='ZX9 speaker'
 							width={400}
 							height={400}
-							className='w-36 md:w-50 lg:w-auto'
+							className='w-36 md:w-50 lg:w-3/5'
 						/>
 					</div>
 					<div className='flex-1 flex items-center justify-center'>

@@ -7,7 +7,7 @@ class Rate {
 	}
 
 	getTotalPrice() {
-		return this.value + this.shippingPrice + this.value * this.vat;
+		return Math.round(this.value + this.shippingPrice + this.value * this.vat);
 	}
 
 	getShippingPrice() {
@@ -15,7 +15,7 @@ class Rate {
 	}
 
 	getVatPrice() {
-		return this.value * this.vat;
+		return Math.round(this.value * this.vat);
 	}
 
 	getVatRate() {
