@@ -100,7 +100,7 @@ export default async function ProductPage({ params: awaitedParams }: Props) {
 	return (
 		<>
 			<div className='bg-white'>
-				<div className='max-w-[1100px] mx-auto py-4 lg:py-24 flex flex-col gap-12 px-4'>
+				<div className='max-w-[1100px] mx-auto py-4 lg:py-16 flex flex-col gap-12 px-4 xl:px-0'>
 					<div>
 						<BackButton />
 					</div>
@@ -228,9 +228,18 @@ export default async function ProductPage({ params: awaitedParams }: Props) {
 									key={image.id}
 									className={`
                                     w-full h-auto relative rounded-xl overflow-hidden
-                                    ${image.position === 'FIRST' && 'md:row-start-1 md:col-start-1'}
-                                    ${image.position === 'SECOND' && 'md:row-start-2 md:col-start-1'}
-                                    ${image.position === 'THIRD' && 'row-span-2 md:row-span-2 md:col-start-2'}
+                                    ${
+																			image.position === 'FIRST' &&
+																			'md:row-start-1 md:col-start-1'
+																		}
+                                    ${
+																			image.position === 'SECOND' &&
+																			'md:row-start-2 md:col-start-1'
+																		}
+                                    ${
+																			image.position === 'THIRD' &&
+																			'row-span-2 md:row-span-2 md:col-start-2'
+																		}
                                 `}>
 									<source srcSet={image.mobile} media='(max-width: 768px)' />
 									<source srcSet={image.tablet} media='(max-width: 1024px)' />
