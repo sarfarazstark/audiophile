@@ -105,7 +105,6 @@ export default async function ProductPage({ params: awaitedParams }: Props) {
 						<BackButton />
 					</div>
 
-					{/* Product Overview  */}
 					<div
 						className='
                             bg-white w-full
@@ -113,7 +112,6 @@ export default async function ProductPage({ params: awaitedParams }: Props) {
                             gap-8 lg:gap-22 mb-10
                             min-h-full lg:min-h-130
                         '>
-						{/* LEFT IMAGE */}
 						<div className='flex-1 flex'>
 							<picture className='w-full h-auto relative'>
 								<source
@@ -138,32 +136,26 @@ export default async function ProductPage({ params: awaitedParams }: Props) {
 							</picture>
 						</div>
 
-						{/* RIGHT SIDE CONTENT */}
 						<div className='flex-1 flex flex-col justify-center items-start'>
 							<div className='flex flex-col items-start gap-8'>
-								{/* NEW PRODUCT BADGE */}
 								{product.new && (
 									<span className='text-primary tracking-[0.5em] text-xs md:text-sm font-light uppercase'>
 										New Product
 									</span>
 								)}
 
-								{/* TITLE */}
 								<h2 className='text-3xl lg:text-[2.8rem] font-semibold text-primary-200 max-w-sm lg:leading-12'>
 									{product.name}
 								</h2>
 
-								{/* DESCRIPTION */}
 								<p className='text-primary-6/70 font-extralight text-sm lg:text-lg lg:max-w-lg leading-6 tracking-wider'>
 									{product.description}
 								</p>
 
-								{/* PRICE */}
 								<span className='text-primary-200 text-lg font-semibold'>
 									{price(product.price)}
 								</span>
 
-								{/* ADD TO CART */}
 								<CartAction
 									product={{
 										id: product.id,

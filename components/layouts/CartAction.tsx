@@ -2,6 +2,7 @@
 
 import { CartItem, useCart } from '@/lib/store/cart';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 export function CartAction({ product }: { product: CartItem }) {
 	const addItem = useCart((state) => state.addItem);
@@ -14,6 +15,7 @@ export function CartAction({ product }: { product: CartItem }) {
 	const handleAddToCart = () => {
 		addItem(product, count);
 		setCount(1);
+		toast.success(`${product.name}x${count} added to cart`);
 	};
 
 	console.log(product);

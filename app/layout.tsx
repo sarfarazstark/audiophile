@@ -3,9 +3,9 @@ import './globals.css';
 import Header from '@/components/layouts/Header';
 import Footer from '@/components/layouts/Footer';
 import TransitionLayout from '@/components/layouts/TransitionLayout';
+import { Toaster } from 'react-hot-toast';
 
-const SITE_URL =
-	process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export const metadata: Metadata = {
 	metadataBase: new URL(SITE_URL),
@@ -34,6 +34,7 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body className='antialiased bg-black h-full'>
+				<Toaster position='top-left' />
 				<Header />
 				<TransitionLayout>{children}</TransitionLayout>
 				<Footer />
