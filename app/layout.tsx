@@ -5,10 +5,10 @@ import Footer from '@/components/layouts/Footer';
 import TransitionLayout from '@/components/layouts/TransitionLayout';
 import { Toaster } from 'react-hot-toast';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-
 export const metadata: Metadata = {
-	metadataBase: new URL(SITE_URL),
+	metadataBase: new URL(
+		process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+	),
 
 	title: 'Audiophile',
 	description: 'A place for audiophiles to find the best products',
