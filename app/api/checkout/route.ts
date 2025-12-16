@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
 		const key = process.env.PAYU_MERCHANT_KEY;
 		const salt = process.env.PAYU_MERCHANT_SECRET;
-		const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+		const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
 		const env = process.env.PAYU_ENV;
 
 		if (!key || !salt || !baseUrl) {

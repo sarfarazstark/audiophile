@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 		if (receivedHash !== expectedHash) {
 			console.error(`❌ Hash mismatch for failed transaction ${txnid}`);
 			return NextResponse.redirect(
-				`${process.env.NEXT_PUBLIC_BASE_URL}/payment/failed?error=security_breach`,
+				`${process.env.NEXT_PUBLIC_SITE_URL}/payment/failed?error=security_breach`,
 			);
 		}
 
@@ -45,12 +45,12 @@ export async function POST(req: NextRequest) {
 		console.log(`❌ Payment ${txnid} marked as FAILED`);
 
 		return NextResponse.redirect(
-			`${process.env.NEXT_PUBLIC_BASE_URL}/payment/failed?order=${txnid}`,
+			`${process.env.NEXT_PUBLIC_SITE_URL}/payment/failed?order=${txnid}`,
 		);
 	} catch (err) {
 		console.error('Failure handler error:', err);
 		return NextResponse.redirect(
-			`${process.env.NEXT_PUBLIC_BASE_URL}/payment/failed?error=internal_error`,
+			`${process.env.NEXT_PUBLIC_SITE_URL}/payment/failed?error=internal_error`,
 		);
 	}
 }
