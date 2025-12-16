@@ -1,9 +1,19 @@
+'use client';
 import Image from 'next/image';
+import { motion } from 'motion/react';
 
 const About = () => {
 	return (
 		<div className='bg-white py-12 px-8'>
-			<div className='flex flex-col-reverse lg:flex-row justify-end items-center gap-12 max-w-[1100px] mx-auto min-h-150'>
+			<motion.div
+				initial={{ opacity: 0, y: 40 }}
+				whileInView={{ opacity: 1, y: 0 }}
+				viewport={{ once: true, margin: '-80px' }}
+				transition={{
+					duration: 0.5,
+					ease: 'easeOut',
+				}}
+				className='flex flex-col-reverse lg:flex-row justify-end items-center gap-12 max-w-[1100px] mx-auto min-h-150'>
 				<div className='space-y-6 flex-1 flex flex-col justify-center mx-2 lg:mx-0 lg:max-w-[450px]'>
 					<h1 className='text-2xl text-center lg:text-left lg:text-[2.5rem] tracking-wide font-bold text-primary-200 uppercase lg:leading-11 '>
 						Bringing you the <span className='text-primary'>best</span> audio
@@ -25,7 +35,7 @@ const About = () => {
 					height={400}
 					className='w-full flex-1 rounded-2xl md:max-h-80 lg:max-h-full object-cover'
 				/>
-			</div>
+			</motion.div>
 		</div>
 	);
 };

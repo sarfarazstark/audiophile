@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import NavLink from './NavLink';
+import { motion } from 'motion/react';
 
 export type products = {
 	id: number;
@@ -25,24 +28,25 @@ export type products = {
 export const ProductCard = ({
 	product,
 	isReverse,
+	index,
 }: {
 	product: products;
 	isReverse: boolean;
+	index: number;
 }) => (
-	<div
-		key={product.id}
+	<motion.div
+		initial={{ opacity: 0, y: 40 }}
+		whileInView={{ opacity: 1, y: 0 }}
+		viewport={{ once: true, margin: '-80px' }}
+		transition={{
+			duration: 0.5,
+			ease: 'easeOut',
+			delay: index * 0.08,
+		}}
 		className={`bg-white p-4 w-full flex flex-col gap-14 lg:gap-22 ${
 			isReverse ? 'lg:flex-row-reverse' : 'lg:flex-row'
 		}`}>
 		<div className='flex-1'>
-			{/* <Image
-			src={product.imageUrl || '/placeholder.svg'}
-			alt={product.name}
-			width={400}
-			height={400}
-			className='w-full'
-		/> */}
-
 			<picture>
 				<source
 					media='(min-width: 1024px)'
@@ -52,13 +56,16 @@ export const ProductCard = ({
 					media='(min-width: 768px)'
 					srcSet={product.images?.tablet || '/placeholder.svg'}
 				/>
-				<img
+				<Image
 					src={product.images?.mobile || '/placeholder.svg'}
-					alt='ZX7 speaker background'
+					alt={product.name}
+					width={400}
+					height={400}
 					className='w-full h-full'
 				/>
 			</picture>
 		</div>
+
 		<div className='flex-1 flex flex-col justify-center lg:items-start'>
 			<div className='flex flex-col items-center lg:items-start gap-8'>
 				{product.new && (
@@ -79,7 +86,7 @@ export const ProductCard = ({
 				</NavLink>
 			</div>
 		</div>
-	</div>
+	</motion.div>
 );
 
 export default function Products({ products }: { products: products[] }) {
@@ -90,6 +97,7 @@ export default function Products({ products }: { products: products[] }) {
 					key={product.id}
 					product={product}
 					isReverse={i % 2 === 1}
+					index={i}
 				/>
 			))}
 		</div>

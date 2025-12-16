@@ -42,13 +42,22 @@ export default function Categories({
 			}}
 			className={`bg-white py-12 px-8 min-h-100 ${className}`}>
 			<div className='grid grid-cols-1 md:grid-cols-3 justify-end items-center gap-8 max-w-[1100px] mx-auto uppercase'>
-				{nav_list.map((nav) => (
+				{nav_list.map((nav, index) => (
 					<NavLink
 						key={nav.name}
 						href={nav.href}
 						className='relative text-black flex flex-col items-center group'
 						onClick={onClick}>
-						<div className='h-28 flex items-end justify-center overflow-visible'>
+						<motion.div
+							initial={{ opacity: 0, y: 40 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true, margin: '-80px' }}
+							transition={{
+								duration: 0.5,
+								ease: 'easeOut',
+								delay: index * 0.08,
+							}}
+							className='h-28 flex items-end justify-center overflow-visible'>
 							<Image
 								src={nav.image}
 								alt={nav.name}
@@ -56,7 +65,7 @@ export default function Categories({
 								height={240}
 								className='transition-all duration-500 transform group-hover:-translate-y-2 -mb-16 z-10 w-26 lg:w-30'
 							/>
-						</div>
+						</motion.div>
 
 						<div className='flex flex-col items-center justify-end gap-3 p-5 h-48 bg-primary-500 w-full rounded-xl'>
 							<Image

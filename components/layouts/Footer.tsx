@@ -17,6 +17,7 @@ export default function Footer({ className = '' }: { className?: string }) {
 						<NavLink href='/headphones'>Headphones</NavLink>
 						<NavLink href='/speakers'>Speakers</NavLink>
 						<NavLink href='/earphones'>Earphones</NavLink>
+						<NavLink href='/track'>Track Order</NavLink>
 					</nav>
 				</div>
 				<div className='w-full grid grid-cols-1 md:grid-cols-2 justify-between justify-items-center items-center lg:items-start gap-7 mb-8'>

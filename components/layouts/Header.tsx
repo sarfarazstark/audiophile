@@ -8,7 +8,7 @@ export default function Header({ className = '' }: { className?: string }) {
 	return (
 		<header
 			className={`sticky top-0 z-30 bg-black lg:px-8 xl:px-0 ${className}`}>
-			<div className='flex justify-between items-center border-b border-grey-2/40 h-auto lg:h-24 bg-black max-w-[1100px] mx-auto px-4 py-6 lg:px-0 relative'>
+			<div className='flex justify-between items-center border-b border-grey-2/40 h-20 bg-black max-w-[1100px] mx-auto px-4 lg:px-0 relative'>
 				<HamMenu />
 				<Link href='/' className='flex-2 md:flex-10 lg:flex-1'>
 					<Image
@@ -16,7 +16,7 @@ export default function Header({ className = '' }: { className?: string }) {
 						width={135}
 						height={45}
 						alt='Audiophile logo'
-						className='w-48 md:w-36 lg:w-auto mx-auto md:mr-auto md:ml-0 lg:mx-0'
+						className='w-48 max-h-10 md:max-h-ful md:w-36 lg:w-auto mx-auto md:mr-auto md:ml-0 lg:mx-0'
 					/>
 				</Link>
 				<nav className='lg:flex items-center justify-center gap-8 flex-3 uppercase hidden'>

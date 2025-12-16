@@ -1,5 +1,7 @@
+'use client';
 import Image from 'next/image';
 import NavLink from './NavLink';
+import { motion } from 'motion/react';
 
 function Bento() {
 	return (
@@ -7,7 +9,15 @@ function Bento() {
 			<div className='flex flex-col gap-8 max-w-[1100px] mx-auto min-h-136 uppercase py-12'>
 				{/* First */}
 				<div className='flex flex-col lg:flex-row md:min-h-180 lg:min-h-auto bg-primary bg-[url(/assets/home/desktop/pattern-circles.svg)] bg-size-[200%] md:bg-size-[100%] lg:bg-auto bg-no-repeat bg-position-[50%_-8rem] lg:bg-position-[-90%_10%] min-h-[580px] rounded-xl'>
-					<div className='flex-1 flex justify-center items-center lg:items-end lg:mt-20'>
+					<motion.div
+						initial={{ opacity: 0, y: 40 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true, margin: '-80px' }}
+						transition={{
+							duration: 0.5,
+							ease: 'easeOut',
+						}}
+						className='flex-1 flex justify-center items-center lg:items-end lg:mt-20'>
 						<Image
 							src='/assets/home/desktop/image-speaker-zx9.png'
 							alt='ZX9 speaker'
@@ -15,8 +25,16 @@ function Bento() {
 							height={400}
 							className='w-36 md:w-50 lg:w-3/5'
 						/>
-					</div>
-					<div className='flex-1 flex items-center justify-center'>
+					</motion.div>
+					<motion.div
+						initial={{ opacity: 0, y: 40 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true, margin: '-80px' }}
+						transition={{
+							duration: 0.5,
+							ease: 'easeOut',
+						}}
+						className='flex-1 flex items-center justify-center'>
 						<div className='flex flex-col lg:gap-7 items-center lg:items-start justify-center h-full max-w-70 md:max-w-80'>
 							<h2 className='text-4xl text-center lg:text-left md:text-6xl font-bold text-white max-w-40 md:max-w-70'>
 								ZX9 speaker
@@ -31,13 +49,20 @@ function Bento() {
 								See Product
 							</NavLink>
 						</div>
-					</div>
+					</motion.div>
 				</div>
 
 				{/* Second */}
 				<div className='relative min-h-80 rounded-xl overflow-hidden bg-primary-500 flex'>
 					{/* Responsive Background via <picture> */}
-					<picture>
+					<motion.picture
+						initial={{ opacity: 0, y: 40 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true, margin: '-80px' }}
+						transition={{
+							duration: 0.5,
+							ease: 'easeOut',
+						}}>
 						<source
 							media='(min-width: 1024px)'
 							srcSet='/assets/home/desktop/image-speaker-zx7.jpg'
@@ -46,12 +71,14 @@ function Bento() {
 							media='(min-width: 768px)'
 							srcSet='/assets/home/tablet/image-speaker-zx7.jpg'
 						/>
-						<img
+						<Image
+							width={400}
+							height={400}
 							src='/assets/home/mobile/image-speaker-zx7.jpg'
 							alt='ZX7 speaker background'
 							className='absolute inset-0 w-full h-full object-cover lg:object-right'
 						/>
-					</picture>
+					</motion.picture>
 
 					{/* Overlay Content */}
 					<div className='relative z-10 flex-1 flex items-start justify-start'>
@@ -71,7 +98,15 @@ function Bento() {
 
 				{/* Third */}
 				<div className='flex flex-col lg:flex-row gap-8'>
-					<picture className='flex-1'>
+					<motion.picture
+						initial={{ opacity: 0, y: 40 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true, margin: '-80px' }}
+						transition={{
+							duration: 0.5,
+							ease: 'easeOut',
+						}}
+						className='flex-1'>
 						<source
 							media='(min-width: 1024px)'
 							srcSet='/assets/home/desktop/image-earphones-yx1.jpg'
@@ -82,12 +117,14 @@ function Bento() {
 							srcSet='/assets/home/tablet/image-earphones-yx1.jpg'
 						/>
 
-						<img
+						<Image
+							width={400}
+							height={400}
 							src='/assets/home/mobile/image-earphones-yx1.jpg'
 							alt='yx1 earphones'
 							className='rounded-2xl w-full md:aspect-3/1 lg:aspect-auto object-cover object-top'
 						/>
-					</picture>
+					</motion.picture>
 
 					<div className='flex-1 bg-primary-500 flex items-start justify-start rounded-2xl aspect-square md:aspect-3/1 lg:aspect-auto'>
 						<div className='flex flex-col gap-7 items-start justify-center h-full px-12 lg:px-22'>

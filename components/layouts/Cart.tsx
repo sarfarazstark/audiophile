@@ -101,7 +101,7 @@ export function Cart() {
 						}}
 						ref={dropdownRef}
 						className='fixed top-18 bottom-0 left-0 md:left-auto md:absolute -md:right-4 md:right-0 md:bottom-full md:top-full lg:mt-8 z-10 w-max'>
-						<div className='md:mt-5 flex flex-col justify-start gap-5 items-center bg-white shadow-xl md:rounded-xl border border-gray-300 max-w-screen min-w-screen lg:min-w-sm lg:max-w-xs md:max-w-sm md:min-w-sm lg:min-h-110 lg:max-h-125 p-6 md:p-8 text-primary-200'>
+						<div className='md:mt-5 h-full flex flex-col justify-start gap-5 items-center bg-white shadow-xl md:rounded-xl border border-gray-300 max-w-screen min-w-screen lg:min-w-sm lg:max-w-xs md:max-w-sm md:min-w-sm lg:min-h-110 lg:max-h-125 p-6 md:p-8 text-primary-200'>
 							<div className='flex justify-between w-full'>
 								<span className='leading-6 tracking-wider uppercase font-bold'>
 									Cart ({totalItems})
@@ -197,9 +197,7 @@ export function Cart() {
 								<>
 									<div className='flex justify-between items-center w-full mt-auto'>
 										<span className='font-bold'>Total</span>
-										<span className='font-bold'>
-											{price(total)}
-										</span>
+										<span className='font-bold'>{price(total)}</span>
 									</div>
 									<Link
 										href='/checkout'

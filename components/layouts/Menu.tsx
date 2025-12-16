@@ -45,7 +45,7 @@ const HamMenu = ({ className = '' }: { className?: string }) => {
 			{isOpen && (
 				<Categories
 					className='fixed left-0 right-0 top-16 md:top-18 bottom-0 md:bottom-26 overflow-y-auto bg-white z-50'
-					onClick={() => setIsOpen((prev) => !prev)}
+					onClick={() => toggle()}
 				/>
 			)}
 		</div>
