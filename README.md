@@ -67,3 +67,16 @@ Beyond the original UI requirements, this project includes a complete backend, p
 git clone <repository-url>
 cd audiophile
 npm install
+```
+
+---
+
+## 📝 TODO / Roadmap
+
+- [ ] **Payment Webhooks**: Implement a dedicated webhook endpoint to handle payment status updates from PayU (and other providers) asynchronously. This should be separate from the user redirect flow (`surl`/`furl`) to ensure reliability even if the user closes the browser.
+- [ ] **Fix Typos**: Rename `app/api/payment/sucess` to `app/api/payment/success`.
+- [ ] **Env Variable Consistency**: Standardize usage of `PAYU_MERCHANT_SALT` vs `PAYU_MERCHANT_SECRET` across the codebase.
+- [ ] **Frontend Pages**: Create dedicated frontend pages for `/payment/success` and `/payment/failure` to provide a better user experience than raw JSON responses.
+- [ ] **Multi-Provider Support**: Implement Stripe and Razorpay payment providers as defined in the Prisma schema.
+- [ ] **Testing**: Add unit and integration tests (e.g., Jest, Playwright) to ensure application stability.
+- [ ] **Checkout Refactor**: Refactor checkout logic to dynamically select the payment provider instead of hardcoding PayU.
