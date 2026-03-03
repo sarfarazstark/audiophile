@@ -9,5 +9,7 @@ export function log(value: LogValue): void {
 	const pretty =
 		typeof value === 'string' ? value : JSON.stringify(value, null, 2);
 
-	fs.appendFileSync(logFile, pretty + '\n\n');
+	fs.promises.appendFile(logFile, pretty + '\n\n').catch((err) => {
+		console.error('Failed to write to log file:', err);
+	});
 }
