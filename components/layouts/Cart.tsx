@@ -53,13 +53,13 @@ export function Cart() {
 			<div
 				className='relative cursor-pointer'
 				onClick={() => setIsOpen(!isOpen)}>
-				{/* eslint-disable-next-line @next/next/no-img-element */}
-				<img
+				<Image
 					ref={toggleRef}
 					src='/assets/shared/icon-cart.svg'
 					width={25}
 					height={25}
 					alt='Cart icon'
+					priority
 				/>
 				{totalItems > 0 && (
 					<motion.div
