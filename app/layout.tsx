@@ -1,9 +1,17 @@
 import type { Metadata } from 'next';
+import { Manrope } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/layouts/Header';
 import Footer from '@/components/layouts/Footer';
 import TransitionLayout from '@/components/layouts/TransitionLayout';
 import { Toaster } from 'react-hot-toast';
+
+const manrope = Manrope({
+	subsets: ['latin'],
+	display: 'swap',
+	weight: ['400', '500', '700'],
+	variable: '--font-manrope',
+});
 
 export const metadata: Metadata = {
 	metadataBase: new URL(
@@ -33,7 +41,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en'>
-			<body className='antialiased bg-black h-full'>
+			<body className={`${manrope.variable} antialiased bg-black h-full`}>
 				<Toaster position='top-left' />
 				<Header />
 				<TransitionLayout>{children}</TransitionLayout>
