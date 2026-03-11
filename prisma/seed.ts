@@ -69,14 +69,15 @@ async function main() {
 		});
 	}
 
+	const categories = await prisma.category.findMany();
+	const categoryMap = new Map(categories.map((c) => [c.slug, c.id]));
+
 	// ============================================================================
 	// 2. Seed Products (base info)
 	// ============================================================================
 	for (const p of productsJson) {
-		const category = await prisma.category.findUnique({
-			where: { slug: p.category },
-		});
-		if (!category) throw new Error(`Category not found: ${p.category}`);
+		const categoryId = categoryMap.get(p.category);
+		if (!categoryId) throw new Error(`Category not found: ${p.category}`);
 
 		await prisma.product.upsert({
 			where: { slug: p.slug },
@@ -86,7 +87,7 @@ async function main() {
 				features: p.features,
 				price: p.price,
 				new: p.new,
-				categoryId: category.id,
+				categoryId: categoryId,
 				imageUrl: normalize(p.image.desktop), // legacy fallback
 			},
 			create: {
@@ -96,7 +97,7 @@ async function main() {
 				features: p.features,
 				price: p.price,
 				new: p.new,
-				categoryId: category.id,
+				categoryId: categoryId,
 				imageUrl: normalize(p.image.desktop),
 			},
 		});
@@ -104,25 +105,26 @@ async function main() {
 
 	console.log('✓ Products base created');
 
+	const products = await prisma.product.findMany();
+	const productMap = new Map(products.map((p) => [p.slug, p.id]));
+
 	// ============================================================================
 	// 3. Seed Product Images (main + category)
 	// ============================================================================
 	for (const p of productsJson) {
-		const product = await prisma.product.findUnique({
-			where: { slug: p.slug },
-		});
-		if (!product) continue;
+		const productId = productMap.get(p.slug);
+		if (!productId) continue;
 
 		// Main Images
 		await prisma.productImage.upsert({
-			where: { productId: product.id },
+			where: { productId: productId },
 			update: {
 				mobile: normalize(p.image.mobile),
 				tablet: normalize(p.image.tablet),
 				desktop: normalize(p.image.desktop),
 			},
 			create: {
-				productId: product.id,
+				productId: productId,
 				mobile: normalize(p.image.mobile),
 				tablet: normalize(p.image.tablet),
 				desktop: normalize(p.image.desktop),
@@ -131,14 +133,14 @@ async function main() {
 
 		// Category Images
 		await prisma.categoryImage.upsert({
-			where: { productId: product.id },
+			where: { productId: productId },
 			update: {
 				mobile: normalize(p.categoryImage.mobile),
 				tablet: normalize(p.categoryImage.tablet),
 				desktop: normalize(p.categoryImage.desktop),
 			},
 			create: {
-				productId: product.id,
+				productId: productId,
 				mobile: normalize(p.categoryImage.mobile),
 				tablet: normalize(p.categoryImage.tablet),
 				desktop: normalize(p.categoryImage.desktop),
@@ -152,20 +154,18 @@ async function main() {
 	// 4. Seed INCLUDES
 	// ============================================================================
 	for (const p of productsJson) {
-		const product = await prisma.product.findUnique({
-			where: { slug: p.slug },
-		});
-		if (!product) continue;
+		const productId = productMap.get(p.slug);
+		if (!productId) continue;
 
 		// Clear old includes (simple)
 		await prisma.productInclude.deleteMany({
-			where: { productId: product.id },
+			where: { productId: productId },
 		});
 
 		for (const inc of p.includes) {
 			await prisma.productInclude.create({
 				data: {
-					productId: product.id,
+					productId: productId,
 					quantity: inc.quantity,
 					item: inc.item,
 				},
@@ -179,33 +179,31 @@ async function main() {
 	// 5. Seed GALLERY
 	// ============================================================================
 	for (const p of productsJson) {
-		const product = await prisma.product.findUnique({
-			where: { slug: p.slug },
-		});
-		if (!product) continue;
+		const productId = productMap.get(p.slug);
+		if (!productId) continue;
 
 		await prisma.productGallery.deleteMany({
-			where: { productId: product.id },
+			where: { productId: productId },
 		});
 
 		await prisma.productGallery.createMany({
 			data: [
 				{
-					productId: product.id,
+					productId: productId,
 					position: 'FIRST',
 					mobile: normalize(p.gallery.first.mobile),
 					tablet: normalize(p.gallery.first.tablet),
 					desktop: normalize(p.gallery.first.desktop),
 				},
 				{
-					productId: product.id,
+					productId: productId,
 					position: 'SECOND',
 					mobile: normalize(p.gallery.second.mobile),
 					tablet: normalize(p.gallery.second.tablet),
 					desktop: normalize(p.gallery.second.desktop),
 				},
 				{
-					productId: product.id,
+					productId: productId,
 					position: 'THIRD',
 					mobile: normalize(p.gallery.third.mobile),
 					tablet: normalize(p.gallery.third.tablet),
@@ -221,27 +219,23 @@ async function main() {
 	// 6. Seed RECOMMENDATIONS
 	// ============================================================================
 	for (const p of productsJson) {
-		const product = await prisma.product.findUnique({
-			where: { slug: p.slug },
-		});
-		if (!product) continue;
+		const productId = productMap.get(p.slug);
+		if (!productId) continue;
 
 		// Clear old relations
 		await prisma.productRecommendation.deleteMany({
-			where: { productId: product.id },
+			where: { productId: productId },
 		});
 
 		for (const other of p.others) {
-			const recommended = await prisma.product.findUnique({
-				where: { slug: other.slug },
-			});
+			const recommendedProductId = productMap.get(other.slug);
 
-			if (!recommended) continue;
+			if (!recommendedProductId) continue;
 
 			await prisma.productRecommendation.create({
 				data: {
-					productId: product.id,
-					recommendedProductId: recommended.id,
+					productId: productId,
+					recommendedProductId: recommendedProductId,
 					mobile: normalize(other.image.mobile),
 					tablet: normalize(other.image.tablet),
 					desktop: normalize(other.image.desktop),
