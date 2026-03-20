@@ -89,10 +89,7 @@ export async function POST(req: NextRequest) {
 		const payuStatus = vp.transaction_details[txnid].status;
 		const mihpayid = vp.transaction_details[txnid].mihpayid;
 
-		if (
-			payuStatus === 'success' &&
-			existingPayment.status !== PaymentStatus.SUCCEEDED
-		) {
+		if (payuStatus === 'success') {
 			await prisma.payment.update({
 				where: { id: txnid },
 				data: {
@@ -101,10 +98,7 @@ export async function POST(req: NextRequest) {
 				},
 			});
 			log(`✅ Payment ${txnid} updated to SUCCEEDED`);
-		} else if (
-			payuStatus === 'failure' &&
-			existingPayment.status !== PaymentStatus.FAILED
-		) {
+		} else if (payuStatus === 'failure') {
 			await prisma.payment.update({
 				where: { id: txnid },
 				data: {
