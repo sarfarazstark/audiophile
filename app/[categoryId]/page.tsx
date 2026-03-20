@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { cache } from 'react';
 import Products from '@/components/layouts/Products';
 import Categories from '@/components/layouts/Categories';
 import About from '@/components/layouts/About';
@@ -9,15 +10,19 @@ interface Props {
 	params: Promise<{ categoryId: string; }>;
 }
 
+const getCategory = cache(async (slug: string) => {
+	return await prisma.category.findUnique({
+		where: {
+			slug,
+		},
+	});
+});
+
 export async function generateMetadata(
 	{ params }: Props,
 ): Promise<Metadata> {
 	const { categoryId } = await params;
-	const category = await prisma.category.findUnique({
-		where: {
-			slug: categoryId,
-		},
-	});
+	const category = await getCategory(categoryId);
 
 	if (!category) {
 		return {
@@ -40,11 +45,7 @@ export default async function CategoryPage({
 		notFound();
 	}
 
-	const category = await prisma.category.findUnique({
-		where: {
-			slug: categoryId,
-		},
-	});
+	const category = await getCategory(categoryId);
 
 	if (!category) {
 		notFound();
