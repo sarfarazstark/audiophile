@@ -39,7 +39,28 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ message: 'Invalid Hash' }, { status: 200 });
 		}
 
-		/* ------------------ STEP 2: Verify with PayU Server ------------------ */
+		/* ------------------ STEP 2: Fetch Local Payment Record ------------------ */
+		const existingPayment = await prisma.payment.findUnique({
+			where: { id: txnid },
+		});
+
+		if (!existingPayment) {
+			log(`⚠️ Payment record ${txnid} not found in DB`);
+			return NextResponse.json({ status: 'ok' });
+		}
+
+		// Short-circuit if payment is already in a final state
+		if (
+			existingPayment.status === PaymentStatus.SUCCEEDED ||
+			existingPayment.status === PaymentStatus.FAILED
+		) {
+			log(
+				`ℹ️ Payment ${txnid} already in final state: ${existingPayment.status}`,
+			);
+			return NextResponse.json({ status: 'ok' });
+		}
+
+		/* ------------------ STEP 3: Verify with PayU Server ------------------ */
 		const verifyPayload = {
 			key,
 			command: 'verify_payment',
@@ -68,38 +89,30 @@ export async function POST(req: NextRequest) {
 		const payuStatus = vp.transaction_details[txnid].status;
 		const mihpayid = vp.transaction_details[txnid].mihpayid;
 
-		const existingPayment = await prisma.payment.findUnique({
-			where: { id: txnid },
-		});
-
-		if (existingPayment) {
-			if (
-				payuStatus === 'success' &&
-				existingPayment.status !== PaymentStatus.SUCCEEDED
-			) {
-				await prisma.payment.update({
-					where: { id: txnid },
-					data: {
-						status: PaymentStatus.SUCCEEDED,
-						providerPaymentId: mihpayid,
-					},
-				});
-				log(`✅ Payment ${txnid} updated to SUCCEEDED`);
-			} else if (
-				payuStatus === 'failure' &&
-				existingPayment.status !== 'FAILED'
-			) {
-				await prisma.payment.update({
-					where: { id: txnid },
-					data: {
-						status: 'FAILED',
-						providerPaymentId: mihpayid,
-					},
-				});
-				log(`❌ Payment ${txnid} marked as FAILED`);
-			}
-		} else {
-			log(`⚠️ Payment record ${txnid} not found in DB`);
+		if (
+			payuStatus === 'success' &&
+			existingPayment.status !== PaymentStatus.SUCCEEDED
+		) {
+			await prisma.payment.update({
+				where: { id: txnid },
+				data: {
+					status: PaymentStatus.SUCCEEDED,
+					providerPaymentId: mihpayid,
+				},
+			});
+			log(`✅ Payment ${txnid} updated to SUCCEEDED`);
+		} else if (
+			payuStatus === 'failure' &&
+			existingPayment.status !== PaymentStatus.FAILED
+		) {
+			await prisma.payment.update({
+				where: { id: txnid },
+				data: {
+					status: PaymentStatus.FAILED,
+					providerPaymentId: mihpayid,
+				},
+			});
+			log(`❌ Payment ${txnid} marked as FAILED`);
 		}
 
 		return NextResponse.json({ status: 'ok' });
