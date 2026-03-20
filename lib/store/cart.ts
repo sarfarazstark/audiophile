@@ -60,11 +60,14 @@ export const useCart = create<CartState>()(
 
 			decrease: (id) =>
 				set({
-					items: get()
-						.items.map((i) =>
-							i.id === id ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i,
-						)
-						.filter((i) => i.quantity > 0),
+					items: get().items.reduce((acc, item) => {
+						if (item.id === id) {
+							acc.push({ ...item, quantity: Math.max(1, item.quantity - 1) });
+						} else if (item.quantity > 0) {
+							acc.push(item);
+						}
+						return acc;
+					}, [] as CartItem[]),
 				}),
 
 			clearCart: () => set({ items: [] }),
