@@ -70,7 +70,7 @@ async function main() {
 	}
 
 	const categories = await prisma.category.findMany();
-	const categoryMap = new Map(categories.map((c) => [c.slug, c.id]));
+	const categoryMap = new Map<string, number>(categories.map((c) => [c.slug, c.id]));
 
 	// ============================================================================
 	// 2. Seed Products (base info)
@@ -106,7 +106,7 @@ async function main() {
 	console.log('✓ Products base created');
 
 	const products = await prisma.product.findMany();
-	const productMap = new Map(products.map((p) => [p.slug, p.id]));
+	const productMap = new Map<string, number>(products.map((p) => [p.slug, p.id]));
 
 	// ============================================================================
 	// 3. Seed Product Images (main + category)
@@ -162,13 +162,13 @@ async function main() {
 			where: { productId: productId },
 		});
 
-		for (const inc of p.includes) {
-			await prisma.productInclude.create({
-				data: {
+		if (p.includes.length > 0) {
+			await prisma.productInclude.createMany({
+				data: p.includes.map((inc) => ({
 					productId: productId,
 					quantity: inc.quantity,
 					item: inc.item,
-				},
+				})),
 			});
 		}
 	}
