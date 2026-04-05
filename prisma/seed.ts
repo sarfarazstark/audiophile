@@ -58,16 +58,13 @@ async function main() {
 	// ============================================================================
 	const categorySlugs = [...new Set(productsJson.map((p) => p.category))];
 
-	for (const slug of categorySlugs) {
-		await prisma.category.upsert({
-			where: { slug },
-			update: {},
-			create: {
-				slug,
-				name: capitalize(slug),
-			},
-		});
-	}
+	await prisma.category.createMany({
+		data: categorySlugs.map((slug) => ({
+			slug,
+			name: capitalize(slug),
+		})),
+		skipDuplicates: true,
+	});
 
 	const categories = await prisma.category.findMany();
 	const categoryMap = new Map(categories.map((c) => [c.slug, c.id]));
