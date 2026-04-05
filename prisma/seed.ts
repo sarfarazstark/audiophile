@@ -227,19 +227,24 @@ async function main() {
 			where: { productId: productId },
 		});
 
+		const recommendationsData = [];
 		for (const other of p.others) {
 			const recommendedProductId = productMap.get(other.slug);
 
 			if (!recommendedProductId) continue;
 
-			await prisma.productRecommendation.create({
-				data: {
-					productId: productId,
-					recommendedProductId: recommendedProductId,
-					mobile: normalize(other.image.mobile),
-					tablet: normalize(other.image.tablet),
-					desktop: normalize(other.image.desktop),
-				},
+			recommendationsData.push({
+				productId: productId,
+				recommendedProductId: recommendedProductId,
+				mobile: normalize(other.image.mobile),
+				tablet: normalize(other.image.tablet),
+				desktop: normalize(other.image.desktop),
+			});
+		}
+
+		if (recommendationsData.length > 0) {
+			await prisma.productRecommendation.createMany({
+				data: recommendationsData,
 			});
 		}
 	}
