@@ -288,30 +288,29 @@ async function main() {
 		where: { productId: { in: productIds } },
 	});
 
-	const recommendationsToCreate = productsJson.flatMap((p) => {
-		const productId = productMap.get(p.slug);
-		if (!productId) return [];
+		const recommendationsData = [];
+		for (const other of p.others) {
+			const recommendedProductId = productMap.get(other.slug);
 
 		return p.others
 			.map((other) => {
 				const recommendedProductId = productMap.get(other.slug);
 				if (!recommendedProductId) return null;
 
-				return {
-					productId: productId,
-					recommendedProductId: recommendedProductId,
-					mobile: normalize(other.image.mobile),
-					tablet: normalize(other.image.tablet),
-					desktop: normalize(other.image.desktop),
-				};
-			})
-			.filter((r): r is NonNullable<typeof r> => r !== null);
-	});
+			recommendationsData.push({
+				productId: productId,
+				recommendedProductId: recommendedProductId,
+				mobile: normalize(other.image.mobile),
+				tablet: normalize(other.image.tablet),
+				desktop: normalize(other.image.desktop),
+			});
+		}
 
-	if (recommendationsToCreate.length > 0) {
-		await prisma.productRecommendation.createMany({
-			data: recommendationsToCreate,
-		});
+		if (recommendationsData.length > 0) {
+			await prisma.productRecommendation.createMany({
+				data: recommendationsData,
+			});
+		}
 	}
 
 	console.log('✓ Recommendations created');
