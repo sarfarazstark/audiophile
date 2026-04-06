@@ -58,21 +58,13 @@ async function main() {
 	// ============================================================================
 	const categorySlugs = [...new Set(productsJson.map((p) => p.category))];
 
-	const existingCategories = await prisma.category.findMany({
-		where: { slug: { in: categorySlugs } },
-	});
-	const existingSlugs = new Set(existingCategories.map((c) => c.slug));
-
-	const newCategories = categorySlugs
-		.filter((slug) => !existingSlugs.has(slug))
-		.map((slug) => ({
+	await prisma.category.createMany({
+		data: categorySlugs.map((slug) => ({
 			slug,
 			name: capitalize(slug),
-		}));
-
-	if (newCategories.length > 0) {
-		await prisma.category.createMany({ data: newCategories });
-	}
+		})),
+		skipDuplicates: true,
+	});
 
 	const categories = await prisma.category.findMany();
 	const categoryMap = new Map<string, number>(categories.map((c) => [c.slug, c.id]));
