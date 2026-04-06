@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 		const { data, items } = body;
 
 		const key = process.env.PAYU_MERCHANT_KEY;
-		const salt = process.env.PAYU_MERCHANT_SECRET;
+		const salt = process.env.PAYU_MERCHANT_SALT;
 		const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
 		const env = process.env.PAYU_ENV;
 
@@ -58,6 +58,8 @@ export async function POST(req: Request) {
 		const grandTotal = new Rate(subtotal).getTotalPrice();
 		const trackingId = crypto.randomBytes(5).toString('hex').toUpperCase();
 
+		const provider = (data as any).provider || PaymentProvider.PAYU;
+
 		const order = await prisma.order.create({
 			data: {
 				trackingId,
@@ -81,7 +83,7 @@ export async function POST(req: Request) {
 				},
 				payment: {
 					create: {
-						provider: PaymentProvider.PAYU,
+						provider: provider,
 						currency: 'INR',
 						amount: grandTotal,
 					},
@@ -89,6 +91,15 @@ export async function POST(req: Request) {
 			},
 			include: { payment: true },
 		});
+
+		if (provider === PaymentProvider.STRIPE || provider === PaymentProvider.RAZORPAY) {
+			// Mock implementation for Stripe and Razorpay
+			return NextResponse.json({
+				url: `${baseUrl}/payment/success?order=${order.trackingId}`,
+				params: {},
+				orderId: order.trackingId,
+			});
+		}
 
 		const payuScriptUrl =
 			env === 'prod'
@@ -111,8 +122,8 @@ export async function POST(req: Request) {
 			firstname: data.name,
 			email: data.email,
 			phone: data.phone || '9999999999',
-			surl: `${baseUrl}/payment/success`,
-			furl: `${baseUrl}/payment/failure`,
+			surl: `${baseUrl}/api/payment/success`,
+			furl: `${baseUrl}/api/payment/failure`,
 		};
 
 		const hash = generatePayuHash(payload, salt);
